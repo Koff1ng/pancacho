@@ -1,0 +1,106 @@
+[20-Sep-2025 15:50:42 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:43 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:44 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:46 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:49 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:50 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:51 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:50:51 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/panela/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/panela/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/panela/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/panela/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/panela/lib/conexion.php on line 14
+[20-Sep-2025 15:52:34 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 14
+[20-Sep-2025 15:58:37 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 14
+[20-Sep-2025 16:06:11 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 14
+[20-Sep-2025 16:26:07 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:14
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(14): mysqli_connect('sql10.freesqlda...', 'sql10799412', '2qlny1DdwZ', 'sql10799412')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 14
+[20-Sep-2025 16:43:41 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:15
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(15): mysqli_connect('sql10.freesqlda...', 'sql10792765', 'djcgKpFtDQ', 'sql10792765')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 15
+[20-Sep-2025 16:43:56 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:15
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(15): mysqli_connect('sql10.freesqlda...', 'sql10792765', 'djcgKpFtDQ', 'sql10792765')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 15
+[20-Sep-2025 16:45:30 America/Bogota] PHP Fatal error:  Uncaught mysqli_sql_exception: Invalid argument in /home/servient/public_html/administrador/lib/conexion.php:15
+Stack trace:
+#0 /home/servient/public_html/administrador/lib/conexion.php(15): mysqli_connect('sql10.freesqlda...', 'sql10792765', 'djcgKpFtDQ', 'sql10792765')
+#1 /home/servient/public_html/administrador/lib/funciones.php(139): conectar()
+#2 /home/servient/public_html/administrador/admin/index.php(54): cargar_casos()
+#3 {main}
+  thrown in /home/servient/public_html/administrador/lib/conexion.php on line 15
+[07-Oct-2025 02:17:13 UTC] PHP Warning:  Undefined variable $dbname in /home/servient/public_html/administrador/admin/servicios.php on line 17

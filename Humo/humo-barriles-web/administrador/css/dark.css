@@ -1,0 +1,92 @@
+/* ─────────────────── PALETA OSCURA ─────────────────── */
+:root{
+    --bg:#0d1117;
+    --surface:#161b22;
+    --surface-alt:#1e2531;
+    --text:#e6edf3;
+    --muted:#8b949e;
+
+    --accent:#58a6ff;     /* azul principal */
+    --success:#3fb950;    /* verde */
+    --warning:#e3b341;    /* amarillo  */
+    --danger:#f85149;     /* rojo      */
+}
+
+/* ─────────── RESET BÁSICO (si no estaba ya) ─────────── */
+html,body{margin:0;background:var(--bg);color:var(--text)}
+*,*:before,*:after{box-sizing:border-box;font-family:system-ui,
+  -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ╔════════════════ CONTENEDOR GENERAL ════════════════╗ */
+.container{max-width:1220px;margin:auto;padding:1.8rem}
+
+/* ─────────── CABECERA ─────────── */
+h1{margin:0 0 1rem;font-size:2.2rem;font-weight:800}
+
+/* ╔═══════════════ SECCIÓN SERVICIOS ══════════════════╗ */
+.servicio h3{margin:.2rem 0 1rem}
+.servicio .btn{margin-right:.6rem;margin-bottom:.6rem}
+
+/* ─────────── estilos genéricos de botón ─────────── */
+.btn,.case-actions button{
+    padding:.55rem .9rem;border:0;border-radius:6px;
+    font-weight:600;font-size:.85rem;cursor:pointer;
+    transition:filter .2s ease;
+}
+.btn:hover,.case-actions button:hover{filter:brightness(1.08)}
+
+/* Colores de estado habituales */
+.btn-active    {background:var(--accent); color:var(--bg)}
+.btn-inactive  {background:var(--muted);  color:var(--bg)}
+.btn-success   {background:var(--success);color:var(--bg)}
+.btn-warning   {background:var(--warning);color:var(--surface)}
+.btn-danger,
+.404,          /* tu clase “error OTP” */
+.ccError       /* tu clase “error CC”  */
+               {background:var(--danger); color:var(--bg)}
+
+/* ╔════════════════ TARJETAS DE CASO ══════════════════╗ */
+.case-card{
+    background:var(--surface);border-radius:10px;
+    box-shadow:0 0 8px #0008;margin-bottom:1.5rem;
+    overflow:hidden;transition:transform .15s;
+}
+.case-card:hover{transform:translateY(-2px)}
+
+/* ── header ── */
+.case-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:.9rem 1.2rem;background:var(--surface-alt);
+    font-size:1.05rem;font-weight:600
+}
+.case-status{
+    padding:.25rem .8rem;border-radius:9999px;
+    font-size:.75rem;font-weight:700;text-transform:uppercase;
+    color:var(--bg)             /* el fondo ya lo pinta PHP */
+}
+.case-time{font-size:.8rem;color:var(--muted)}
+
+/* ── body ── */
+.case-body{
+    padding:1.1rem 1.45rem;display:grid;row-gap:.55rem;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr))
+}
+.info-group label{
+    display:block;font-size:.78rem;margin-bottom:.18rem;color:var(--muted)
+}
+.info-group span{font-size:1rem;font-weight:600;color:var(--text)}
+
+/* ── acciones ── */
+.case-actions{
+    display:flex;flex-wrap:wrap;gap:.65rem;
+    padding:.9rem 1.2rem;background:var(--surface-alt)
+}
+.case-actions button{flex:1 1 120px}
+
+/* ╔════════════ RESPONSIVE ═════════════╗ */
+@media(max-width:650px){
+    .case-body{grid-template-columns:1fr}
+    .case-actions button{flex:1 1 100%}
+}
