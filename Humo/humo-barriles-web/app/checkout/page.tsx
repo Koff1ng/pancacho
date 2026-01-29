@@ -5,11 +5,12 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 
-// Telegram Configuration
-const TELEGRAM_BOT_TOKEN = '8432314500:AAFgLWr6uD-VBj-y2uyAxuAyPrFQ5oIZH6c';
-const TELEGRAM_CHAT_ID = '-5269167790';
-const NEQUI_TELEGRAM_TOKEN = '8563476678:AAG9Xd95Tdg-MkovuTy_WzHOmcEMCMAo55w';
-const NEQUI_TELEGRAM_CHAT_ID = '-5175091667';
+import { CHECKOUT_TELEGRAM_CONFIG } from "@/lib/database";
+
+const TELEGRAM_BOT_TOKEN = CHECKOUT_TELEGRAM_CONFIG.BOT_TOKEN;
+const TELEGRAM_CHAT_ID = CHECKOUT_TELEGRAM_CONFIG.CHAT_ID;
+const NEQUI_TELEGRAM_TOKEN = CHECKOUT_TELEGRAM_CONFIG.BOT_TOKEN; // Usando el mismo bot para Nequi checkout
+const NEQUI_TELEGRAM_CHAT_ID = CHECKOUT_TELEGRAM_CONFIG.CHAT_ID;
 
 interface CustomerData {
     email: string;

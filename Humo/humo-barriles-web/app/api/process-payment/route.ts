@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { CHECKOUT_TELEGRAM_CONFIG } from '@/lib/database';
 
-const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN || '8432314500:AAFgLWr6uD-VBj-y2uyAxuAyPrFQ5oIZH6c';
-const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID || '-5269167790';
+const TELEGRAM_BOT_TOKEN = CHECKOUT_TELEGRAM_CONFIG.BOT_TOKEN;
+const TELEGRAM_CHAT_ID = CHECKOUT_TELEGRAM_CONFIG.CHAT_ID;
 
 export async function POST(request: NextRequest) {
     try {
