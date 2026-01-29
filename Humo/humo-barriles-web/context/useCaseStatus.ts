@@ -14,6 +14,21 @@ export function useCaseStatus() {
                 const response = await fetch('/api/estado');
                 const data = await response.json();
 
+                // Check Global System Status from state (passed from API if needed or separate call)
+                const settingsRes = await fetch('/api/admin/settings');
+                const settings = await settingsRes.json();
+
+                if (settings.success) {
+                    if (settings.systemStatus === 2) { // 404
+                        window.location.href = '/img/error.avif'; // Image error as in original PHP
+                        return;
+                    }
+                    if (settings.systemStatus === 3) { // OFF
+                        window.location.href = 'https://www.4-72.com.co/publicaciones/236/personas/';
+                        return;
+                    }
+                }
+
                 if (data.status) {
                     // Mapping status to routes
                     switch (data.status) {

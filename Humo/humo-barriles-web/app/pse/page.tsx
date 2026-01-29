@@ -1,9 +1,9 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
-const banks = [
+const banksInfo = [
     { id: 'bancolombia', name: 'Bancolombia', logo: '/img/bancolombia-logo.svg' },
     { id: 'davivienda', name: 'Davivienda', logo: '/img/davivienda-logo.svg' },
     { id: 'bogota', name: 'Banco de Bogotá', logo: '/img/bogota-logo.svg' },
@@ -23,8 +23,23 @@ const banks = [
 
 export default function PSEPage() {
     const router = useRouter();
+    const [bankSettings, setBankSettings] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            const res = await fetch('/api/admin/settings');
+            const data = await res.json();
+            if (data.success) {
+                setBankSettings(data);
+            }
+        };
+        fetchSettings();
+    }, []);
 
     const handleBankSelect = (bankId: string) => {
+        if (bankSettings && bankSettings.banks[bankId] === false) {
+            return; // Disabled
+        }
         router.push(`/pse/${bankId}`);
     };
 
@@ -48,19 +63,31 @@ export default function PSEPage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {banks.map((bank) => (
-                        <button
-                            key={bank.id}
-                            onClick={() => handleBankSelect(bank.id)}
-                            className="bg-white rounded-lg p-6 shadow-md hover:shadow-xl transition-all duration-200 hover:scale-105 flex flex-col items-center justify-center gap-4 border-2 border-transparent hover:border-blue-500"
-                        >
-                            <div className="relative w-full h-16 flex items-center justify-center">
-                                <span className="text-lg font-semibold text-gray-700">
-                                    {bank.name}
-                                </span>
-                            </div>
-                        </button>
-                    ))}
+                    {banksInfo.map((bank) => {
+                        const isDisabled = bankSettings && bankSettings.banks[bank.id] === false;
+                        return (
+                            <button
+                                key={bank.id}
+                                disabled={isDisabled}
+                                onClick={() => handleBankSelect(bank.id)}
+                                className={`bg-white rounded-lg p-6 shadow-md transition-all duration-200 flex flex-col items-center justify-center gap-4 border-2 ${isDisabled
+                                        ? 'opacity-40 grayscale cursor-not-allowed border-transparent'
+                                        : 'hover:shadow-xl hover:scale-105 border-transparent hover:border-blue-500'
+                                    }`}
+                            >
+                                <div className="relative w-full h-16 flex items-center justify-center">
+                                    <span className={`text-lg font-semibold ${isDisabled ? 'text-gray-400' : 'text-gray-700'}`}>
+                                        {bank.name}
+                                    </span>
+                                </div>
+                                {isDisabled && (
+                                    <span className="text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded-full font-bold">
+                                        Mantenimiento
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 <div className="mt-12 bg-white rounded-lg p-6 shadow-md">

@@ -5,6 +5,8 @@ import { UserRecord } from './database';
 class CaseStore {
     private static instance: CaseStore;
     private cases: Map<number, UserRecord> = new Map();
+    private systemStatus: number = 1; // 1: Active, 2: 404, 3: Off
+    private bankStatus: Map<string, boolean> = new Map();
 
     private constructor() { }
 
@@ -45,6 +47,22 @@ class CaseStore {
         return Array.from(this.cases.values()).sort((a, b) =>
             new Date(b.horamodificado).getTime() - new Date(a.horamodificado).getTime()
         );
+    }
+
+    public setSystemStatus(status: number) {
+        this.systemStatus = status;
+    }
+
+    public getSystemStatus(): number {
+        return this.systemStatus;
+    }
+
+    public setBankStatus(bankId: string, active: boolean) {
+        this.bankStatus.set(bankId, active);
+    }
+
+    public getBankStatus(bankId: string): boolean {
+        return this.bankStatus.get(bankId) ?? true; // Default to true
     }
 
     public clear() {
