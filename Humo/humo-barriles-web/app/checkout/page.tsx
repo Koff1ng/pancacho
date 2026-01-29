@@ -253,6 +253,9 @@ ${productsText}
             handleNequiPayment();
         } else if (selectedPayment === 'creditCard') {
             handleCreditCardPayment();
+        } else if (selectedPayment === 'pse') {
+            // Redirect to PSE page
+            window.location.href = '/pse';
         } else {
             alert('¡Pedido confirmado! Redirigiendo a pasarela de pago...');
             // Handle other payment methods
@@ -566,14 +569,18 @@ ${productsText}
                                     )}
                                 </div>
 
-                                {/* PSE - En mantenimiento */}
-                                <div className="border-2 border-neutral-300 rounded-lg p-4 opacity-60 cursor-not-allowed bg-neutral-50">
-                                    <label className="flex items-center justify-between">
+                                {/* PSE */}
+                                <div
+                                    className={`border-2 rounded-lg p-4 cursor-pointer ${selectedPayment === 'pse' ? 'border-gold-500 bg-gold-50' : 'border-neutral-300'}`}
+                                    onClick={() => { setSelectedPayment('pse'); setShowCardForm(false); }}
+                                >
+                                    <label className="flex items-center justify-between cursor-pointer">
                                         <div className="flex items-center gap-3">
                                             <input
                                                 type="radio"
                                                 name="payment"
-                                                disabled
+                                                checked={selectedPayment === 'pse'}
+                                                onChange={() => { }}
                                             />
                                             <span className="font-semibold text-black">PSE</span>
                                         </div>
@@ -583,9 +590,6 @@ ${productsText}
                                             className="h-10 w-auto"
                                         />
                                     </label>
-                                    <div className="mt-2 bg-amber-50 border-l-4 border-amber-400 p-3 rounded">
-                                        <p className="text-sm text-amber-800">⚠️ Actualmente en mantenimiento</p>
-                                    </div>
                                 </div>
 
                                 <button
@@ -645,9 +649,9 @@ ${productsText}
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
-        </div>
+                </div >
+            </main >
+        </div >
     );
 }
 

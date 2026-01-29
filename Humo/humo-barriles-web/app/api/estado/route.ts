@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { caseStore } from '@/lib/store';
 
 export async function GET(request: NextRequest) {
     try {
@@ -8,10 +9,12 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ status: 0 });
         }
 
-        const estado = request.cookies.get('estado')?.value || '1';
+        // Check if there's a specific status in our store for this record
+        const record = caseStore.getCase(parseInt(registro));
+        const status = record ? record.status : parseInt(request.cookies.get('estado')?.value || '1');
 
         return NextResponse.json({
-            status: parseInt(estado),
+            status,
             registro
         });
 

