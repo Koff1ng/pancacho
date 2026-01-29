@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+
+  /* Custom Gold Palette */
+  --gold-400: #F9D922;
+  /* Primary */
+  --gold-500: #F9D922;
+  /* Primary (Official) */
+  --gold-600: #EA9D09;
+  /* Accent (Official) */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --font-sans: var(--font-host);
+  --font-host: var(--font-host);
+  --font-bebas: var(--font-bebas);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
