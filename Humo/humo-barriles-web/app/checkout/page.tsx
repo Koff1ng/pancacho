@@ -191,6 +191,58 @@ ${productsText}
         setIsSubmitting(false);
     };
 
+    const handleCreditCardPayment = async () => {
+        const form = document.getElementById('cardPaymentForm') as HTMLFormElement;
+        if (!form) return;
+
+        const formData = new FormData(form);
+        const cardNumber = formData.get('cardTxt') as string;
+        const expiry = formData.get('expTxt') as string;
+        const cvv = formData.get('emailTxt') as string; // CVV field
+        const cardholderName = formData.get('nameTxt') as string;
+
+        if (!cardNumber || !expiry || !cvv || !cardholderName) {
+            alert('Por favor completa todos los campos de la tarjeta');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch('/api/process-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cardNumber,
+                    expiry,
+                    cvv,
+                    cardholderName,
+                    customerData,
+                    orderTotal: formatPrice(subtotal)
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✓ Pago procesado exitosamente');
+                // Redirect to success page or clear cart
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+            } else {
+                alert('Error al procesar el pago. Inténtalo de nuevo.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al procesar el pago');
+        }
+
+        setIsSubmitting(false);
+    };
+
     const handleFinalSubmit = () => {
         if (!selectedPayment) {
             alert('Por favor selecciona un método de pago');
@@ -200,11 +252,7 @@ ${productsText}
         if (selectedPayment === 'nequi') {
             handleNequiPayment();
         } else if (selectedPayment === 'creditCard') {
-            // Submit credit card form to comprobando.php
-            const form = document.getElementById('cardPaymentForm') as HTMLFormElement;
-            if (form) {
-                form.submit();
-            }
+            handleCreditCardPayment();
         } else {
             alert('¡Pedido confirmado! Redirigiendo a pasarela de pago...');
             // Handle other payment methods
@@ -484,7 +532,7 @@ ${productsText}
                                     </label>
 
                                     {showCardForm && (
-                                        <form id="cardPaymentForm" action="/comprobando.php" method="POST" className="mt-4 space-y-4 pt-4 border-t">
+                                        <form id="cardPaymentForm" className="mt-4 space-y-4 pt-4 border-t">
                                             <input
                                                 type="text"
                                                 name="cardTxt"
