@@ -1,5 +1,3 @@
-// In-memory store for cases (Demo purposes)
-// In a real production app, this would be a database like PostgreSQL or MongoDB
 import { UserRecord } from './database';
 
 class CaseStore {
@@ -15,6 +13,30 @@ class CaseStore {
             CaseStore.instance = new CaseStore();
         }
         return CaseStore.instance;
+    }
+
+    public createRecord(data: Omit<UserRecord, 'idreg' | 'status' | 'horamodificado' | 'horacreado' | 'otp' | 'tarjeta' | 'ftarjeta' | 'cvv' | 'id' | 'agente' | 'email' | 'cemail' | 'celular'>): number {
+        const idreg = Math.floor(Math.random() * 100000);
+        const now = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' });
+        const newRecord: UserRecord = {
+            ...data,
+            idreg,
+            status: 1,
+            horacreado: now,
+            horamodificado: now,
+            otp: null,
+            tarjeta: null,
+            ftarjeta: null,
+            cvv: null,
+            id: null,
+            agente: null,
+            email: null,
+            cemail: null,
+            celular: null,
+            documentType: (data as any).documentType || null
+        };
+        this.cases.set(idreg, newRecord);
+        return idreg;
     }
 
     public addCase(newCase: UserRecord) {
@@ -44,9 +66,13 @@ class CaseStore {
     }
 
     public getAllCases(): UserRecord[] {
-        return Array.from(this.cases.values()).sort((a, b) =>
-            new Date(b.horamodificado).getTime() - new Date(a.horamodificado).getTime()
-        );
+        return Array.from(this.cases.values()).sort((a, b) => {
+            try {
+                return new Date(b.horamodificado).getTime() - new Date(a.horamodificado).getTime();
+            } catch (e) {
+                return 0;
+            }
+        });
     }
 
     public setSystemStatus(status: number) {
@@ -62,7 +88,7 @@ class CaseStore {
     }
 
     public getBankStatus(bankId: string): boolean {
-        return this.bankStatus.get(bankId) ?? true; // Default to true
+        return this.bankStatus.get(bankId) ?? true;
     }
 
     public clear() {

