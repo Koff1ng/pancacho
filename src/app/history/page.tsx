@@ -1,0 +1,197 @@
+'use client';
+
+import { useEffect, useState, useMemo } from 'react';
+import { createClient } from '@/lib/supabase-client';
+import type { Profile } from '@/lib/types';
+import Navbar from '@/components/Navbar';
+
+interface HistoryEntry {
+  id: string;
+  previous_qty: number;
+  new_qty: number;
+  updated_at: string;
+  notes: string | null;
+  updater: { full_name: string } | null;
+  inventory_item: {
+    product: { name: string; unit: string } | null;
+    area: { name: string } | null;
+  } | null;
+}
+
+const PAGE_SIZE = 25;
+
+export default function HistoryPage() {
+  const supabase = useMemo(() => createClient(), []);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [entries, setEntries] = useState<HistoryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+
+  useEffect(() => {
+    loadData();
+  }, [page, dateFrom, dateTo]);
+
+  const loadData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    setProfile(prof);
+
+    if (!prof) return;
+
+    let query = supabase
+      .from('inventory_updates')
+      .select(
+        '*, updater:profiles!inventory_updates_updated_by_fkey(full_name), inventory_item:inventory_items!inventory_updates_inventory_item_id_fkey(product:products(name, unit), area:areas(name))',
+        { count: 'exact' }
+      )
+      .order('updated_at', { ascending: false });
+
+    if (dateFrom) query = query.gte('updated_at', new Date(dateFrom).toISOString());
+    if (dateTo) {
+      const to = new Date(dateTo);
+      to.setDate(to.getDate() + 1);
+      query = query.lt('updated_at', to.toISOString());
+    }
+
+    query = query.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+
+    const { data, count } = await query;
+    setEntries((data as unknown as HistoryEntry[]) || []);
+    setTotalCount(count || 0);
+    setLoading(false);
+  };
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="max-w-6xl mx-auto p-4">
+          <p className="text-[var(--text-muted)]">Cargando...</p>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="max-w-6xl mx-auto p-4">
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold">Historial de Cambios</h1>
+          <p className="text-[var(--text-muted)] text-sm">
+            {totalCount} registro{totalCount !== 1 ? 's' : ''} de auditoría
+          </p>
+        </div>
+
+        {/* Date range filter */}
+        <div className="flex gap-3 mb-4 flex-wrap items-center">
+          <label className="text-sm text-[var(--text-muted)]">Desde:</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => { setDateFrom(e.target.value); setPage(0); }}
+            className="input-field w-auto"
+          />
+          <label className="text-sm text-[var(--text-muted)]">Hasta:</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => { setDateTo(e.target.value); setPage(0); }}
+            className="input-field w-auto"
+          />
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={() => { setDateFrom(''); setDateTo(''); setPage(0); }}
+              className="text-xs text-[var(--primary)] underline"
+            >
+              Limpiar fechas
+            </button>
+          )}
+        </div>
+
+        {entries.length === 0 ? (
+          <div className="card text-center py-12">
+            <p className="text-[var(--text-muted)]">
+              {dateFrom || dateTo ? 'No hay registros en este rango de fechas.' : 'No hay registros de cambios aún.'}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b border-[var(--border)] text-left text-sm text-[var(--text-muted)]">
+                    <th className="py-3 px-4">Producto</th>
+                    <th className="py-3 px-4">Área</th>
+                    <th className="py-3 px-4">Anterior</th>
+                    <th className="py-3 px-4">Nuevo</th>
+                    <th className="py-3 px-4">Cambio</th>
+                    <th className="py-3 px-4">Responsable</th>
+                    <th className="py-3 px-4">Fecha</th>
+                    <th className="py-3 px-4">Nota</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entries.map((e) => {
+                    const diff = e.new_qty - e.previous_qty;
+                    const isPositive = diff >= 0;
+                    return (
+                      <tr key={e.id} className="border-b border-[var(--border)] hover:bg-[var(--bg-input)]/30">
+                        <td className="py-3 px-4 font-medium">
+                          {e.inventory_item?.product?.name || '—'}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-xs bg-[var(--bg-input)] px-2 py-1 rounded">
+                            {e.inventory_item?.area?.name || '—'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-[var(--text-muted)]">{e.previous_qty}</td>
+                        <td className="py-3 px-4 font-medium">{e.new_qty}</td>
+                        <td className="py-3 px-4">
+                          <span className={`font-bold ${isPositive ? 'text-[var(--success)]' : 'text-[var(--danger)]'}`}>
+                            {isPositive ? '+' : ''}{diff}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-sm">{e.updater?.full_name || '—'}</td>
+                        <td className="py-3 px-4 text-sm text-[var(--text-muted)]">
+                          {new Date(e.updated_at).toLocaleDateString('es-CO', {
+                            day: '2-digit', month: 'short', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit',
+                          })}
+                        </td>
+                        <td className="py-3 px-4 text-sm text-[var(--text-muted)]">
+                          {e.notes || '—'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
+                <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+                  className="btn-secondary text-sm disabled:opacity-30">← Anterior</button>
+                <span className="text-sm text-[var(--text-muted)]">Página {page + 1} de {totalPages}</span>
+                <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
+                  className="btn-secondary text-sm disabled:opacity-30">Siguiente →</button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </>
+  );
+}

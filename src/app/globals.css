@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0d0d0d;
+  --bg-card: #171717;
+  --bg-input: #1e1e1e;
+  --bg-hover: #262626;
+  --text: #ececec;
+  --text-muted: #8e8e8e;
+  --text-subtle: #666666;
+  --primary: #ececec;
+  --primary-hover: #ffffff;
+  --accent: #10a37f;
+  --accent-hover: #0d8c6d;
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --success: #10a37f;
+  --border: #2a2a2a;
+  --border-hover: #3e3e3e;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Buttons ─── */
+.btn-primary {
+  background-color: var(--primary);
+  color: #0d0d0d;
+  padding: 0.5rem 1rem;
+  border-radius: 0.625rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.625rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-accent:hover {
+  background-color: var(--accent-hover);
+}
+
+.btn-danger {
+  background-color: transparent;
+  color: var(--danger);
+  padding: 0.5rem 1rem;
+  border-radius: 0.625rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  cursor: pointer;
+}
+.btn-danger:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  border-radius: 0.625rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-hover);
+}
+
+/* ─── Inputs ─── */
+.input-field {
+  background-color: var(--bg-input);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.input-field:focus {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 0 1px var(--border-hover);
+}
+.input-field::placeholder {
+  color: var(--text-subtle);
+}
+
+/* Select dropdowns — ensure dark theme on native options */
+select.input-field {
+  color-scheme: dark;
+  cursor: pointer;
+}
+select.input-field option {
+  background-color: var(--bg-card);
+  color: var(--text);
+}
+
+/* Override width:100% when w-auto is used */
+.input-field.w-auto {
+  width: auto !important;
+}
+
+/* ─── Card ─── */
+.card {
+  background-color: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: rgba(16, 163, 127, 0.3);
+  color: white;
+}
+
+/* ─── Transitions ─── */
+a, button, input, select, textarea {
+  transition: all 0.15s ease;
+}
+
+/* ─── Focus ring ─── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
